@@ -1,0 +1,14 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "cloudformationamplif-dev-20191219100027-authRole",
+            "UnauthRoleArn": "arn:aws:iam::559846080442:role/cloudformationamplif-dev-20191219100027-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::559846080442:role/cloudformationamplif-dev-20191219100027-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "cloudformationamplif-dev-20191219100027-deployment",
+            "UnauthRoleName": "cloudformationamplif-dev-20191219100027-unauthRole",
+            "StackName": "cloudformationamplif-dev-20191219100027",
+            "StackId": "arn:aws:cloudformation:us-east-1:559846080442:stack/cloudformationamplif-dev-20191219100027/4bb70ab0-2270-11ea-ad64-0e36ce6a2c7c"
+        }
+    }
+}

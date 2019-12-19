@@ -1,0 +1,34 @@
+{
+    "paths": [
+        {
+            "name": "/items",
+            "lambdaFunction": "testApi",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "testApi",
+    "apiName": "testApi",
+    "functionArns": [
+        {
+            "lambdaFunction": "testApi"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "cloudformationamplif-dev-20191219100027-authRole",
+        "unAuthRoleName": "cloudformationamplif-dev-20191219100027-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "testApi",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
