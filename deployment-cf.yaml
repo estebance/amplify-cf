@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  Repository:
+    Type: String
+    Description: Your Git URL
+    # Description: https://restebance@bitbucket.org/itconsultores/test-cloudformation-amplify.git
+  AccessToken:
+    Type: String
+    Description: auth token
+    # NoEcho: true
+  # OauthToken:
+  #   Type: String
+  #   Description: Oauth Token
+  #   NoEcho: true
+  Domain:
+    Type: String
+    Description: Your domain
+    # Description: libertytest.com
+
+Resources:
+  AmplifyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - amplify.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: Amplify
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: "amplify:*"
+                Resource: "*"
+
+  AmplifyApp:
+    Type: "AWS::Amplify::App"
+    Properties:
+      Name: TodoApp
+      Repository: !Ref Repository
+      Description: React liberty Todo example app
+      OauthToken: !Ref AccessToken  
+      # AccessToken: !Ref AccessToken
+      BuildSpec: |-
+        version: 0.1
+        backend:
+          phases:
+            build:
+              commands:
+                - '# Execute Amplify CLI with the helper script'
+                - amplifyPush --simple
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - npm ci
+            build:
+              commands:
+                - npm run build
+          artifacts:
+            # IMPORTANT - Please verify your build output directory
+            baseDirectory: build
+            files:
+              - '**/*'
+          cache:
+            paths:
+              - node_modules/**/*
+      CustomRules:
+        - Source: /dist/vue.min.js
+          Target: /vue.min.js
+          Status: '200'
+      Tags:
+        - Key: name
+          Value: LibertyTest
+        - Key: version
+          Value: '1.0'
+      IAMServiceRole: !GetAtt AmplifyRole.Arn
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      BranchName: master
+      AppId: !GetAtt AmplifyApp.AppId
+      Description: Master Branch
+      EnableAutoBuild: true
+      Tags:
+        - Key: Name
+          Value: master
+        - Key: Branch
+          Value: master
+
+  AmplifyDomain:
+    Type: AWS::Amplify::Domain
+    Properties:
+      DomainName: !Ref Domain
+      AppId: !GetAtt AmplifyApp.AppId
+      SubDomainSettings:
+        - Prefix: master
+          BranchName: !GetAtt AmplifyBranch.BranchName
+
+Outputs:
+  DefaultDomain:
+    Value: !GetAtt AmplifyApp.DefaultDomain
+
+  MasterBranchUrl:
+    Value: !Join [ ".", [ !GetAtt AmplifyBranch.BranchName, !GetAtt AmplifyDomain.DomainName ]]
